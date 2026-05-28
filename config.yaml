@@ -1,0 +1,14 @@
+tool_search:
+  mode: auto
+  threshold: 0.10
+  pinned_tools:
+    - tool_search
+    - tool_details
+    - execute_code
+    - todo
+    - web_search
+    - read_file
+    - write_file
+    - skills_list
+    - skill_view
+    - skill_manage
