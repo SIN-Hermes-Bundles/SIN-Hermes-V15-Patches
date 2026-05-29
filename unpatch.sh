@@ -36,7 +36,26 @@ fi
 # Clean __pycache__
 find "$HERMES_DIR" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
+# Remove tool_search config from config.yaml
+CONFIG_DST="$HOME/.hermes/config.yaml"
+if [ -f "$CONFIG_DST" ]; then
+  echo "🔧 Removing tool_search config from ~/.hermes/config.yaml..."
+  python3 -c "
+import yaml, sys
+try:
+    cfg = yaml.safe_load(open('$CONFIG_DST'))
+    if 'tool_search' in cfg:
+        del cfg['tool_search']
+        yaml.dump(cfg, open('$CONFIG_DST', 'w'), default_flow_style=False, sort_keys=False)
+        print('✅ tool_search config removed')
+    else:
+        print('⏭ No tool_search config found')
+except Exception as e:
+    print(f'⚠️ Error: {e}')
+" 2>/dev/null || true
+fi
+
 echo ""
 echo "✅ Patches reverted."
 echo ""
-echo "📋 Remove tool_search config from ~/.hermes/config.yaml if desired."
+echo "📋 Config cleaned: ~/.hermes/config.yaml"

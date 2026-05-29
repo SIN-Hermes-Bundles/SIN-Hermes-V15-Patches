@@ -4,9 +4,13 @@ Hermes v0.15.0 lokale Patches für SINator-Betrieb.
 
 ## Patches
 
-### Progressive Tool Loading (tool_search)
-**PR #6318 Equivalent** — Reduziert initiale Tool-Schema-Last von 26→~10 Tools.
+### Progressive Tool Loading (tool_search) — **BUGFIX 2026-05-30**
+**PR #6318 Equivalent** — Reduziert initiale Tool-Schema-Last von 34→~20 Tools.
 Lädt restliche Schemas on-demand via `tool_search(query)` / `tool_details(name)`.
+
+**WICHTIGER FIX:** Browser-Tools sind jetzt in `pinned_tools` enthalten (siehe config.yaml). 
+**Vorher:** Modell hing in `todo`+`read_file` Schleife, weil es `browser_*` Tools nicht laden konnte.
+**Nachher:** Alle Browser-Tools sind direkt verfügbar.
 
 **Geänderte Dateien (7):**
 | Datei | Änderung |
@@ -53,6 +57,16 @@ tool_search:
     - skills_list
     - skill_view
     - skill_manage
+    - browser_navigate      # Browser-Tools (FIX 2026-05-30)
+    - browser_snapshot
+    - browser_click
+    - browser_type
+    - browser_scroll
+    - browser_console
+    - browser_press
+    - browser_get_images
+    - browser_vision
+    - browser_back
 ```
 
 ## Testing
@@ -64,5 +78,9 @@ hermes chat -Q -q "list all loaded tools"
 # Deferred mode test
 # → mode: always in config setzen
 hermes chat -Q -q "list all loaded tools"
-# → sollte nur ~10 pinned tools zeigen, aber ALLE via Katalog sehen
+# → sollte ~20 pinned tools zeigen (inkl. Browser-Tools), aber ALLE via Katalog sehen
+
+# Browser-Tools Test
+hermes chat -Q -q "navigate to https://www.google.com and take a screenshot"
+# → sollte browser_navigate + browser_snapshot aufrufen
 ```
