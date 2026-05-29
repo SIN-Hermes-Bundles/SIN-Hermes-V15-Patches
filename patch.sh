@@ -21,11 +21,29 @@ cp "$PATCH_DIR/agent/agent_init.py"         "$HERMES_DIR/agent/agent_init.py"
 cp "$PATCH_DIR/agent/conversation_loop.py"  "$HERMES_DIR/agent/conversation_loop.py"
 cp "$PATCH_DIR/hermes_cli/models.py"       "$HERMES_DIR/hermes_cli/models.py"
 
+# Apply config.yaml patch
+CONFIG_SRC="$(cd "$(dirname "$0")" && pwd)/config.yaml"
+CONFIG_DST="$HOME/.hermes/config.yaml"
+if [ -f "$CONFIG_SRC" ] && [ -f "$CONFIG_DST" ]; then
+  echo "🔧 Patching tool_search config..."
+  # Extract the tool_search section from the source and replace in dest
+  python3 -c "
+import yaml, sys
+src = yaml.safe_load(open('$CONFIG_SRC'))
+dst = yaml.safe_load(open('$CONFIG_DST'))
+if 'tool_search' in src:
+    dst['tool_search'] = src['tool_search']
+    yaml.dump(dst, open('$CONFIG_DST', 'w'), default_flow_style=False, sort_keys=False)
+    print('✅ tool_search config updated')
+else:
+    print('⚠️ No tool_search section in source config')
+"
+fi
+
 # Clean __pycache__ to avoid stale bytecode
 find "$HERMES_DIR" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
 echo "✅ Patches applied. Clear __pycache__ manually if needed:"
 echo "   find $HERMES_DIR -name __pycache__ -exec rm -rf {} +"
 echo ""
-echo "📋 Remember to add tool_search config to ~/.hermes/config.yaml"
-echo "   See config.yaml in this repo for the snippet."
+echo "📋 Config updated: ~/.hermes/config.yaml"
