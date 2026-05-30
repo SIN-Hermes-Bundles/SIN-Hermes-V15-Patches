@@ -1,5 +1,7 @@
 # SIN-Hermes-V15-Patches
 
+[![graphify](https://img.shields.io/badge/graphify-knowledge%20graph-8A2BE2)](graphify-out/graph.json)
+
 Hermes v0.15.0 lokale Patches für SINator-Betrieb.
 
 ## Patches
